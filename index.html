@@ -207,6 +207,7 @@
         let feedbackGainNode = null;
 
         // --- Composition Parameters ---
+        const GLOBAL_FADE_IN_DURATION = 2.7; // seconds (New constant for initial volume ramp)
         const MELODY_FREQUENCIES = [150, 300, 175, 260];
         const NPM_START = 78;
         const NPM_END = 131;
@@ -739,6 +740,15 @@
          * Schedules the next note in the sequence and handles looping and tempo change.
          */
         function scheduler() {
+            // FIX: Guard against the audioContext being null (e.g., if stopPlayback was called)
+            if (!audioContext) {
+                if (timerId !== null) {
+                    window.clearTimeout(timerId);
+                    timerId = null;
+                }
+                return;
+            }
+
             while (nextNoteTime < audioContext.currentTime + SCHEDULING_LOOKAHEAD) {
 
                 try {
@@ -940,7 +950,10 @@
 
                 // Initialize Master Gain for global fade control
                 masterGainNode = audioContext.createGain();
-                masterGainNode.gain.value = 1.0;
+
+                // Set starting gain to 0 for the fade-in effect
+                masterGainNode.gain.setValueAtTime(0, audioContext.currentTime);
+
                 masterGainNode.connect(audioContext.destination);
             }
 
@@ -978,7 +991,13 @@
             // Reset state variables based on slider position
             isPlaying = true;
             seekComposition(parseInt(seekSlider.value));
+
+            // Schedule the first note slightly in the future
             nextNoteTime = audioContext.currentTime + 0.05;
+
+            // --- IMPLEMENT GLOBAL 2.7S FADE-IN ---
+            const fadeEndTime = nextNoteTime + GLOBAL_FADE_IN_DURATION;
+            masterGainNode.gain.linearRampToValueAtTime(1.0, fadeEndTime);
 
             // Enable visual animations
             visualContainer.classList.add('playback-active');
