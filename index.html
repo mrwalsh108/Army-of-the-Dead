@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Army of the Dead (Accelerating Automaton) - Animated Edition</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for aesthetic flair, ensuring mobile responsiveness */
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1f2937 0%, #000000 100%);
+        }
+        /* Style the slider for better visibility */
+        input[type=range] {
+            width: 100%;
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]:focus {
+            outline: none;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            cursor: pointer;
+            background: #4f46e5;
+            border-radius: 4px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #c7d2fe;
+            cursor: pointer;
+            margin-top: -6px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.4);
+        }
+        /* Pixel Art Styling */
+        .pixel-art {
+            image-rendering: pixelated;
+            shape-rendering: crispEdges;
+        }
+
+        /* --- Zombie Animation CSS --- */
+        /* Default state: No animation */
+
+        /* When playback is active (class added by JS) */
+        .playback-active .zombie-group-1 {
+            animation: zombie-bob var(--beat-duration, 0.5s) infinite steps(2);
+        }
+
+        /* Zombie 2 bobs with an offset delay for variety */
+        .playback-active .zombie-group-2 {
+            animation: zombie-bob var(--beat-duration, 0.5s) infinite steps(2) reverse;
+        }
+
+        .playback-active .z-arms-1 {
+            animation: arm-raise var(--beat-duration, 0.5s) infinite steps(2);
+        }
+
+        .playback-active .z-arms-2 {
+            animation: arm-raise var(--beat-duration, 0.5s) infinite steps(2) alternate;
+        }
+
+        @keyframes zombie-bob {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-1px); } /* 1 unit bob (pixel scale) */
+            100% { transform: translateY(0); }
+        }
+
+        @keyframes arm-raise {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-2px); } /* Arms pump up */
+            100% { transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app" class="p-6 md:p-10 w-full max-w-sm mx-auto bg-gray-800 shadow-2xl rounded-xl border border-gray-700 text-white">
+
+        <h1 class="text-3xl font-extrabold text-center mb-2 text-red-500">
+            Army of the Dead
+        </h1>
+        <p class="text-xs text-center mb-6 text-gray-500 italic">(Accelerating Automaton)</p>
+
+        <!-- 8-Bit Zombie Visuals (SVG) -->
+        <div id="visual-container" class="mb-6 flex justify-center bg-gray-900 rounded-lg p-4 border border-gray-700 shadow-inner">
+            <svg class="pixel-art w-full max-w-[200px] h-auto" viewBox="0 0 64 32" xmlns="http://www.w3.org/2000/svg">
+                <!-- Background -->
+                <rect width="64" height="32" fill="#111827" />
+
+                <!-- Moon -->
+                <rect x="50" y="4" width="2" height="6" fill="#fef3c7" />
+                <rect x="48" y="6" width="6" height="2" fill="#fef3c7" />
+                <rect x="49" y="5" width="4" height="4" fill="#fef3c7" />
+
+                <!-- Zombie 1 (Left) -->
+                <g class="zombie-group-1">
+                    <!-- Head & Body Group -->
+                    <g>
+                        <!-- Skin (Green) -->
+                        <path d="M10 8 h4 v4 h-4 z M8 12 h8 v2 h-8 z M8 14 h2 v2 h-2 z M14 14 h2 v2 h-2 z" fill="#4ade80" />
+                        <!-- Eyes (Red) -->
+                        <rect x="10" y="10" width="1" height="1" fill="#ef4444" />
+                        <rect x="13" y="10" width="1" height="1" fill="#ef4444" />
+                        <!-- Body (Grey/Blue) -->
+                        <path d="M8 16 h8 v8 h-2 v4 h-1 v-4 h-2 v4 h-1 v-4 h-2 z" fill="#374151" />
+                    </g>
+                    <!-- Arms Group (Animated Separately) -->
+                    <g class="z-arms-1">
+                        <rect x="4" y="18" width="4" height="2" fill="#4ade80" />
+                        <rect x="16" y="18" width="4" height="2" fill="#4ade80" />
+                    </g>
+                </g>
+
+                <!-- Zombie 2 (Center-Right) -->
+                <g class="zombie-group-2">
+                    <!-- Head & Body Group -->
+                    <g>
+                        <!-- Skin -->
+                        <path d="M30 10 h4 v4 h-4 z M28 14 h8 v2 h-8 z M28 16 h2 v2 h-2 z M34 16 h2 v2 h-2 z" fill="#22c55e" />
+                        <!-- Eyes -->
+                        <rect x="30" y="12" width="1" height="1" fill="#ef4444" />
+                        <rect x="33" y="12" width="1" height="1" fill="#b91c1c" />
+                        <!-- Body -->
+                        <path d="M28 18 h8 v6 h-2 v4 h-1 v-4 h-2 v4 h-1 v-4 h-2 z" fill="#4b5563" />
+                    </g>
+                    <!-- Arms Group (Animated Separately) -->
+                    <g class="z-arms-2">
+                        <rect x="26" y="14" width="2" height="4" fill="#22c55e" />
+                        <rect x="36" y="14" width="2" height="4" fill="#22c55e" />
+                    </g>
+                </g>
+
+                <!-- Graves/Ground -->
+                <rect x="0" y="28" width="64" height="4" fill="#064e3b" />
+                <rect x="44" y="22" width="4" height="6" fill="#6b7280" /> <!-- Tombstone -->
+                <rect x="43" y="23" width="6" height="1" fill="#6b7280" />
+                <rect x="5" y="25" width="2" height="3" fill="#374151" />
+                <rect x="58" y="24" width="3" height="4" fill="#4b5563" />
+            </svg>
+        </div>
+
+        <div class="text-center mb-6 p-4 bg-gray-900 rounded-lg">
+            <p id="status-display" class="text-lg font-semibold text-green-400">Ready</p>
+            <p id="loop-display" class="text-sm mt-2 text-gray-400">Master Loop: 0 / 96</p>
+            <p id="tempo-display" class="text-sm mt-1 text-gray-500">Tempo: 78.00 NPM</p>
+            <p id="note-display" class="text-xs mt-1 text-gray-500">Note: Waiting</p>
+        </div>
+
+        <!-- Slider Control -->
+        <div class="mb-6">
+            <label for="seek-slider" class="block text-sm font-medium text-gray-400 mb-2">Seek Composition (Note Index)</label>
+            <input type="range" id="seek-slider" min="0" max="383" value="0"
+                   oninput="seekComposition(parseInt(this.value))"
+                   class="mb-2">
+            <p id="slider-note-display" class="text-xs text-center text-gray-500">Note 0 / 384</p>
+        </div>
+
+        <button id="toggle-button"
+                class="w-full py-3 rounded-xl font-bold text-lg transition-all duration-200
+                       bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-lg
+                       shadow-indigo-500/50 transform active:scale-98"
+                onclick="togglePlayback()">
+            Start Sequence
+        </button>
+
+        <div class="mt-8">
+            <h2 class="text-md font-semibold mb-2 text-gray-300">Composition Parameters:</h2>
+            <ul class="text-sm space-y-2 text-gray-400">
+                <li class="p-2 bg-gray-900/50 rounded-lg"><strong class="text-gray-200">Phase I & II (Loops 1-32):</strong> Tempo Ramp | Melody & Organ</li>
+                <li class="p-2 bg-gray-900/50 rounded-lg"><strong class="text-gray-200">Harmonic Bursts:</strong> Triggered at Loops 33, 41, 49, 65, 73, 77, 81, 85, 89, 93.</li>
+                <li class="p-2 bg-gray-900/50 rounded-lg"><strong class="text-gray-200">FINAL SEQUENCE:</strong> 11.0 Second Master Fade Out</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <script>
+        // --- Global Variables and Constants ---
+        let audioContext = null;
+        let masterGainNode = null; // New Master Gain for global fade control
+        let reverbNode = null;
+        let isPlaying = false;
+        let nextNoteTime = 0.0;
+        let currentNoteIndex = 0;
+        let masterLoop = 0;
+        let totalNoteCount = 0;
+        let timerId = null;
+
+        // Continuous Drone/Phaser
+        let sawOscillator = null;
+        let sawGainNode = null;
+        let phaserNode = null;
+        let phaserLFO = null;
+
+        // Harmonic Burst and Echo
+        let feedbackDelayNode = null;
+        let feedbackGainNode = null;
+
+        // --- Composition Parameters ---
+        const MELODY_FREQUENCIES = [150, 300, 175, 260];
+        const NPM_START = 78;
+        const NPM_END = 131;
+        const LOOP_LIMIT = 96;
+        const TOTAL_NOTES_IN_COMPOSITION = LOOP_LIMIT * MELODY_FREQUENCIES.length; // 384 notes
+
+        // Harmonic Burst Parameters
+        const HARMONIC_BASE_FREQ_DEFAULT = 150; // Used only as a safe fallback
+        const TRIANGLE_NPM = 393;
+        const SCHEDULED_BURST_DURATION = 1.8; // seconds (for scheduled loops)
+        const FINAL_BURST_DURATION = 11.0; // seconds
+        const NOTE_INTERVAL = 60 / TRIANGLE_NPM; // ~0.15267 s
+
+        // Note Boundaries (N=Notes)
+        const NOTES_AT_CONSTANT_TEMPO_START = 8 * MELODY_FREQUENCIES.length; // 32 N (Loop 8)
+        const NOTES_IN_RAMP_END = NOTES_AT_CONSTANT_TEMPO_START + (16 * MELODY_FREQUENCIES.length); // 96 N (Loop 24)
+        const NOTES_IN_MOD_UP_START = NOTES_IN_RAMP_END + (8 * MELODY_FREQUENCIES.length); // 128 N (Loop 32)
+        const NOTES_IN_MOD_DOWN_START = NOTES_IN_MOD_UP_START + (16 * MELODY_FREQUENCIES.length); // 192 N (Loop 48)
+        const CHORD_RAMP_NOTES = 32;
+        const NOTES_IN_CHORD_START = NOTES_IN_MOD_DOWN_START + (8 * MELODY_FREQUENCIES.length); // 224 N (Loop 56)
+        const NOTES_IN_BAB1_REPEAT_START = NOTES_IN_CHORD_START + CHORD_RAMP_NOTES; // 256 N (Loop 64)
+        const NOTES_IN_BAB1_REPEAT_SWITCH = NOTES_IN_BAB1_REPEAT_START + (16 * MELODY_FREQUENCIES.length); // 320 N (Loop 80)
+        const NOTES_IN_NEW_PHASE_1_COPY_START = NOTES_IN_BAB1_REPEAT_SWITCH + (8 * MELODY_FREQUENCIES.length); // 352 N (Loop 88)
+
+        const NOTES_IN_RAMP_COUNT = 64;
+
+        // Burst Trigger Notes (Start of Loops: 33, 41, 49, 65, 73, 77, 81, 85, 89, 93)
+        const BURST_TRIGGER_NOTES = [
+            128, // Loop 33
+            160, // Loop 41
+            196, // Loop 49
+            260, // Loop 65
+            292, // Loop 73
+            308, // Loop 77
+            324, // Loop 81
+            340, // Loop 85
+            356, // Loop 89
+            372  // Loop 93
+        ];
+
+        // Frequency Modulation Constants
+        const MINOR_THIRD_RATIO = Math.pow(2, 3/12);
+        const SEMITONE_DOWN_RATIO = Math.pow(2, -1/12);
+        const PERFECT_FIFTH_RATIO = Math.pow(2, 7/12);
+        const ONE_OCTAVE_DOWN_RATIO = 0.5;
+
+        // Percussion Volume Changes (Significant Increase)
+        const KICK_DRUM_MAX_GAIN = 2.2;
+        const HI_HAT_MAX_GAIN = 1.8;
+
+        // Chord Parameters
+        const CHORD_BASE_FREQUENCY = 200;
+        const CHORD_MAX_GAIN = 1.2381;
+        const CHORD_INTERVAL_RATIOS = [1.0, MINOR_THIRD_RATIO, PERFECT_FIFTH_RATIO];
+        const CHORD_DOWN_EXPONENTIAL_STEP = Math.pow(ONE_OCTAVE_DOWN_RATIO, 1 / CHORD_RAMP_NOTES);
+
+        // Sawtooth Drone Parameters
+        const SAW_DRONE_FREQUENCY_START = 100;
+        const SAW_DRONE_FREQUENCY_END = 200;
+        const NOTES_IN_SAW_MOD_START = NOTES_IN_CHORD_START + (CHORD_RAMP_NOTES / 2);
+        const SAW_MAX_GAIN = 0.3208;
+
+        const DURATION_START = 60 / NPM_START;
+        const DURATION_END = 60 / NPM_END;
+        const DURATION_STEP = (DURATION_START - DURATION_END) / NOTES_IN_RAMP_COUNT;
+
+        const SCHEDULING_LOOKAHEAD = 0.1;
+
+        // DOM Elements
+        const statusDisplay = document.getElementById('status-display');
+        const loopDisplay = document.getElementById('loop-display');
+        const tempoDisplay = document.getElementById('tempo-display');
+        const noteDisplay = document.getElementById('note-display');
+        const toggleButton = document.getElementById('toggle-button');
+        const seekSlider = document.getElementById('seek-slider');
+        const sliderNoteDisplay = document.getElementById('slider-note-display');
+        const visualContainer = document.getElementById('visual-container');
+
+
+        // --- Helper Functions for Modulation State ---
+
+        /** Determines the current modulation ratio for Melody/Organ based on totalNoteCount. */
+        function getCurrentModulationRatio(noteCount) {
+
+            // Phase VI: New Phase 1 Copy (No Modulation)
+            if (noteCount >= NOTES_IN_NEW_PHASE_1_COPY_START) {
+                return 1;
+            }
+
+            // Phase V: bab1 repeat
+            else if (noteCount >= NOTES_IN_BAB1_REPEAT_SWITCH) {
+                return SEMITONE_DOWN_RATIO;
+            } else if (noteCount >= NOTES_IN_BAB1_REPEAT_START) {
+                return MINOR_THIRD_RATIO;
+            }
+
+            // Phase IV: Pulse Chord (The modulation ratio is still applied to the *melody/organ* logic, but these are muted/replaced)
+
+            // Phase III: Original bab1 modulation
+            else if (noteCount >= NOTES_IN_MOD_DOWN_START && noteCount < NOTES_IN_CHORD_START) {
+                return SEMITONE_DOWN_RATIO;
+            } else if (noteCount >= NOTES_IN_MOD_UP_START && noteCount < NOTES_IN_MOD_DOWN_START) {
+                return MINOR_THIRD_RATIO;
+            }
+
+            // Phase I & II: Default (No Modulation)
+            return 1;
+        }
+
+        /** Determines the current modulation text. */
+        function getCurrentModulationText(noteCount) {
+
+            if (BURST_TRIGGER_NOTES.includes(noteCount)) {
+                return `Harmonic Burst (${SCHEDULED_BURST_DURATION}s Fade) Active!`;
+            }
+
+            // Phase VI: New Phase 1 Copy
+            if (noteCount >= NOTES_IN_NEW_PHASE_1_COPY_START) {
+                return 'Phase I Copy (131 NPM, Melody & Percussion ONLY)';
+            }
+
+            // Phase V: bab1 repeat
+            else if (noteCount >= NOTES_IN_BAB1_REPEAT_START) {
+                 if (noteCount >= NOTES_IN_BAB1_REPEAT_SWITCH) {
+                    return 'Semitone Down (bab1 Repeat)';
+                }
+                return 'Minor Third Up (bab1 Repeat)';
+            }
+
+            // Phase IV: Chord/Drone with Phasing
+            else if (noteCount >= NOTES_IN_CHORD_START && noteCount < NOTES_IN_BAB1_REPEAT_START) {
+                return 'Pulse Chord Down (Phasing) + Saw Drone Modulation';
+            }
+
+            // Phase III: Original bab1 modulation
+            else if (noteCount >= NOTES_IN_MOD_DOWN_START) {
+                return 'Semitone Down (bab1)';
+            } else if (noteCount >= NOTES_IN_MOD_UP_START) {
+                return 'Minor Third Up (bab1)';
+            }
+
+            return 'None';
+        }
+
+        /**
+         * Calculates the base frequency for the organ's component.
+         */
+        function calculateOrganBaseFrequency(loopIndex) {
+            return (loopIndex % 8 < 4) ? 300 : 600;
+        }
+
+        // --- Reverb and Auxiliary Node Setup ---
+
+        /**
+         * Generates a synthetic impulse response buffer for a simple, room-like reverb.
+         */
+        function createReverb(context) {
+            const convolver = context.createConvolver();
+            const bufferDuration = 2.0;
+            const bufferSize = context.sampleRate * bufferDuration;
+            const buffer = context.createBuffer(2, bufferSize, context.sampleRate);
+
+            for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+                const nowBuffering = buffer.getChannelData(channel);
+                for (let i = 0; i < bufferSize; i++) {
+                    const noise = Math.random() * 2 - 1;
+                    const decay = Math.pow(1 - (i / bufferSize), 4);
+                    nowBuffering[i] = noise * decay;
+                }
+            }
+            convolver.buffer = buffer;
+            return convolver;
+        }
+
+        /**
+         * Sets up the feedback delay (echo) line.
+         */
+        function setupEcho(context) {
+            feedbackDelayNode = context.createDelay(2.0);
+            feedbackDelayNode.delayTime.setValueAtTime(0.3, 0);
+
+            feedbackGainNode = context.createGain();
+            feedbackGainNode.gain.setValueAtTime(0.4, 0);
+
+            // Connect the delay line (Delay -> Gain -> Delay)
+            feedbackDelayNode.connect(feedbackGainNode);
+            feedbackGainNode.connect(feedbackDelayNode); // Feedback loop
+
+            // Connect the delay output to the reverb and MASTER output
+            feedbackDelayNode.connect(reverbNode);
+            feedbackDelayNode.connect(masterGainNode); // Was audioContext.destination
+        }
+
+        // --- Core Audio Functions ---
+
+        /**
+         * Calculates the dynamic note duration and current tempo based on the total notes played.
+         */
+        function calculateTempo(noteCount) {
+            let duration, tempo;
+
+            // Phase I (Notes 0-31): Constant 78 NPM
+            if (noteCount < NOTES_AT_CONSTANT_TEMPO_START) {
+                duration = DURATION_START;
+                tempo = NPM_START;
+            }
+            // Phase II (Notes 32-95): Acceleration 78 -> 131 NPM
+            else if (noteCount < NOTES_IN_RAMP_END) {
+                const notesIntoRamp = noteCount - NOTES_AT_CONSTANT_TEMPO_START;
+                duration = DURATION_START - (DURATION_STEP * notesIntoRamp);
+                tempo = 60 / duration;
+            }
+            // Phase III, IV, V (96-351) & Phase VI (352-383): Constant 131 NPM
+            else {
+                duration = DURATION_END;
+                tempo = NPM_END;
+            }
+
+            return { duration, tempo };
+        }
+
+        /**
+         * Synthesizes and plays a simple kick drum sound.
+         */
+        function playKickDrum(startTime) {
+            if (!audioContext) return;
+
+            const osc = audioContext.createOscillator();
+            osc.type = 'sine';
+
+            const gainNode = audioContext.createGain();
+            gainNode.gain.setValueAtTime(0, startTime);
+
+            const kickDuration = 0.2;
+            const decayTime = startTime + kickDuration;
+
+            osc.frequency.setValueAtTime(100, startTime);
+            osc.frequency.exponentialRampToValueAtTime(1, decayTime);
+
+            gainNode.gain.linearRampToValueAtTime(KICK_DRUM_MAX_GAIN, startTime + 0.005);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, decayTime);
+
+            osc.connect(gainNode);
+            gainNode.connect(masterGainNode); // Was audioContext.destination
+
+            osc.start(startTime);
+            osc.stop(decayTime);
+
+            osc.onended = () => {
+                osc.disconnect();
+                gainNode.disconnect();
+            };
+        }
+
+        /**
+         * Synthesizes and plays a short, high-frequency hi-hat sound.
+         */
+        function playHiHat(startTime, duration) {
+            if (!audioContext) return;
+
+            const bufferSize = audioContext.sampleRate * 0.5;
+            const buffer = audioContext.createBuffer(1, bufferSize, audioContext.sampleRate);
+            const output = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+            const whiteNoise = audioContext.createBufferSource();
+            whiteNoise.buffer = buffer;
+            whiteNoise.loop = true;
+
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 7000;
+
+            const gainNode = audioContext.createGain();
+            gainNode.gain.setValueAtTime(0, startTime);
+
+            const hatDuration = duration * 0.5;
+            const decayTime = startTime + hatDuration;
+
+            gainNode.gain.linearRampToValueAtTime(HI_HAT_MAX_GAIN, startTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, decayTime);
+
+            whiteNoise.connect(filter);
+            filter.connect(gainNode);
+            gainNode.connect(masterGainNode); // Was audioContext.destination
+
+            whiteNoise.start(startTime);
+            whiteNoise.stop(decayTime);
+
+            whiteNoise.onended = () => {
+                whiteNoise.disconnect();
+                filter.disconnect();
+                gainNode.disconnect();
+            };
+        }
+
+        /**
+         * Plays a single Triangle Wave note, connecting it to a master gain node and the echo line.
+         * @param {AudioGainNode} burstMasterGain - The master gain for the burst envelope.
+         */
+        function playTriangleNote(frequency, startTime, duration, burstMasterGain) {
+            if (!audioContext || !burstMasterGain || !feedbackDelayNode) return;
+
+            const osc = audioContext.createOscillator();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(frequency, startTime);
+
+            const gainNode = audioContext.createGain();
+            gainNode.gain.setValueAtTime(0, startTime);
+
+            const attackTime = 0.01;
+            gainNode.gain.linearRampToValueAtTime(1.0, startTime + attackTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration); // Note specific decay
+
+            osc.connect(gainNode);
+
+            // Connect to the passed burstMasterGain (the master envelope for the burst)
+            gainNode.connect(burstMasterGain);
+            gainNode.connect(feedbackDelayNode); // Feed into the echo
+
+            osc.start(startTime);
+            osc.stop(startTime + duration + 0.1);
+
+            osc.onended = () => {
+                osc.disconnect();
+                gainNode.disconnect();
+            };
+        }
+
+
+        /**
+         * Schedules and plays the burst of random, echoed harmonic notes.
+         */
+        function playRandomHarmonicBurst(burstDuration, baseFreq) {
+            if (!audioContext) return;
+
+            const NOTES_IN_BURST = Math.ceil(burstDuration / NOTE_INTERVAL);
+
+            let noteIndex = 0;
+            let currentNoteTime = audioContext.currentTime + 0.05;
+
+            // Master gain node for the entire burst
+            const masterBurstGain = audioContext.createGain();
+            masterBurstGain.gain.setValueAtTime(0, currentNoteTime);
+            masterBurstGain.gain.linearRampToValueAtTime(0.8, currentNoteTime + 0.05); // Initial volume spike
+
+            // Fading to zero over the specified burst duration
+            masterBurstGain.gain.exponentialRampToValueAtTime(0.0001, currentNoteTime + burstDuration);
+
+            // Connect to the MAIN Master Gain instead of destination to ensure global fade out works
+            masterBurstGain.connect(masterGainNode);
+
+            // Recursive function to schedule the notes
+            function scheduleNextHarmonicNote() {
+                if (noteIndex >= NOTES_IN_BURST) {
+                    return;
+                }
+
+                const harmonic = Math.floor(Math.random() * 5) + 1;
+                const frequency = baseFreq * harmonic;
+
+                playTriangleNote(frequency, currentNoteTime, NOTE_INTERVAL, masterBurstGain);
+
+                currentNoteTime += NOTE_INTERVAL;
+                noteIndex++;
+
+                const delayMs = (currentNoteTime - audioContext.currentTime) * 1000;
+
+                if (delayMs > 0) {
+                    window.setTimeout(scheduleNextHarmonicNote, delayMs);
+                } else {
+                    scheduleNextHarmonicNote();
+                }
+            }
+
+            scheduleNextHarmonicNote();
+        }
+
+
+        /**
+         * Plays the Square Wave Melody note.
+         */
+        function playNote(frequency, startTime, duration, modulationRatio) {
+            if (!audioContext) return;
+
+            const oscillator = audioContext.createOscillator();
+            oscillator.type = 'square';
+
+            let finalFrequency = frequency * modulationRatio;
+
+            oscillator.frequency.setValueAtTime(finalFrequency, startTime);
+
+            const gainNode = audioContext.createGain();
+            gainNode.gain.setValueAtTime(0, startTime);
+
+            const attackTime = 0.01;
+            const releaseTime = duration * 0.1;
+
+            gainNode.gain.linearRampToValueAtTime(0.4, startTime + attackTime);
+            const stopTime = startTime + duration;
+            gainNode.gain.linearRampToValueAtTime(0.0001, stopTime - releaseTime);
+
+            oscillator.connect(gainNode);
+            gainNode.connect(masterGainNode); // Was audioContext.destination
+
+            oscillator.start(startTime);
+            oscillator.stop(stopTime);
+
+            oscillator.onended = () => {
+                oscillator.disconnect();
+                gainNode.disconnect();
+            };
+        }
+
+        /**
+         * Plays the rich Organ sound at the specified frequency.
+         */
+        function playOrganNote(baseFrequency, modulationRatio, startTime, duration) {
+            if (!audioContext || !reverbNode) return;
+
+            const finalFrequency = baseFrequency * modulationRatio;
+
+            const organGain = audioContext.createGain();
+            organGain.gain.setValueAtTime(0, startTime);
+
+            const attackTime = duration * 0.2;
+            const releaseTime = 0.5;
+
+            organGain.gain.linearRampToValueAtTime(0.5, startTime + attackTime);
+
+            const stopTime = startTime + duration;
+            organGain.gain.linearRampToValueAtTime(0.0001, stopTime);
+
+            const detunes = [0, 0.3, -0.3];
+
+            detunes.forEach(detune => {
+                const osc = audioContext.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(finalFrequency + detune, startTime);
+
+                osc.connect(organGain);
+                osc.start(startTime);
+                osc.stop(stopTime + releaseTime + 0.1);
+
+                osc.onended = () => {
+                    osc.disconnect();
+                };
+            });
+
+            // Organ connects to the reverb node
+            organGain.connect(reverbNode);
+        }
+
+        /**
+         * Plays the Pulse Wave Chord.
+         */
+        function playPulseWaveChord(baseFreq, startTime, duration) {
+            if (!audioContext || !reverbNode || !phaserNode) return;
+
+            const chordGain = audioContext.createGain();
+            chordGain.gain.setValueAtTime(0, startTime);
+
+            chordGain.gain.linearRampToValueAtTime(CHORD_MAX_GAIN, startTime + 0.01);
+            chordGain.gain.linearRampToValueAtTime(0.0001, startTime + duration);
+
+            CHORD_INTERVAL_RATIOS.forEach(ratio => {
+                const finalFrequency = baseFreq * ratio;
+
+                const osc = audioContext.createOscillator();
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(finalFrequency, startTime);
+
+                osc.connect(chordGain);
+                osc.start(startTime);
+                osc.stop(startTime + duration + 0.05);
+
+                osc.onended = () => {
+                    osc.disconnect();
+                };
+            });
+
+            // Connects the chord gain to the phaser node
+            chordGain.connect(phaserNode);
+        }
+
+        /**
+         * Starts the continuous Saw Tooth Wave drone.
+         */
+        function startSawWave(startTime) {
+            if (!audioContext || sawOscillator) return;
+
+            sawOscillator = audioContext.createOscillator();
+            sawOscillator.type = 'sawtooth';
+            sawOscillator.frequency.setValueAtTime(SAW_DRONE_FREQUENCY_START, startTime);
+
+            sawGainNode = audioContext.createGain();
+            sawGainNode.gain.setValueAtTime(SAW_MAX_GAIN, startTime);
+
+            sawOscillator.connect(sawGainNode);
+            sawGainNode.connect(masterGainNode); // Was audioContext.destination
+
+            sawOscillator.start(startTime);
+        }
+
+        /**
+         * Stops the continuous Saw Tooth Wave drone.
+         */
+        function stopSawWave(stopTime) {
+            if (sawOscillator) {
+                sawGainNode.gain.exponentialRampToValueAtTime(0.0001, stopTime + 0.1);
+                sawOscillator.stop(stopTime + 0.1);
+
+                sawOscillator = null;
+                sawGainNode = null;
+            }
+        }
+
+        /**
+         * Schedules the Saw Tooth Drone frequency modulation.
+         */
+        function modulateSawWave(modulationTime) {
+            if (sawOscillator) {
+                sawOscillator.frequency.setValueAtTime(SAW_DRONE_FREQUENCY_END, modulationTime);
+            }
+        }
+
+
+        /**
+         * Schedules the next note in the sequence and handles looping and tempo change.
+         */
+        function scheduler() {
+            while (nextNoteTime < audioContext.currentTime + SCHEDULING_LOOKAHEAD) {
+
+                try {
+                    // --- Sequence End Check (Loop 96) ---
+                    if (masterLoop >= LOOP_LIMIT) {
+                        statusDisplay.textContent = `Final Burst Sequence (${FINAL_BURST_DURATION}s Master Fade) Initiating...`;
+
+                        const modulationRatio = getCurrentModulationRatio(totalNoteCount);
+                        const finalOrganBase = calculateOrganBaseFrequency(masterLoop);
+                        const finalHarmonicBase = finalOrganBase * modulationRatio;
+
+                        // 1. Trigger the final 11.0 second burst
+                        playRandomHarmonicBurst(FINAL_BURST_DURATION, finalHarmonicBase);
+
+                        // 2. Perform a Master Fade Out on the entire output (including reverb tails)
+                        // This guarantees a smooth silence before closure.
+                        if (masterGainNode) {
+                            const now = audioContext.currentTime;
+                            // Hold volume for 2 seconds, then fade over the remaining duration + buffer
+                            masterGainNode.gain.setValueAtTime(1.0, now);
+                            masterGainNode.gain.linearRampToValueAtTime(0, now + FINAL_BURST_DURATION + 3.0);
+                        }
+
+                        // 3. Delay stopPlayback until the fade is completely finished + buffer
+                        const bufferTime = 4.0; // Seconds to allow reverb tails to die out naturally
+                        window.setTimeout(stopPlayback, (FINAL_BURST_DURATION + bufferTime) * 1000);
+
+                        // Halt the note scheduling loop immediately
+                        return;
+                    }
+
+                    // 1. Determine Tempo and Note Duration
+                    const { duration, tempo } = calculateTempo(totalNoteCount);
+
+                    // 2. Determine Modulation Ratios and Phase
+                    const modulationRatio = getCurrentModulationRatio(totalNoteCount);
+                    const modulationText = getCurrentModulationText(totalNoteCount);
+
+                    // Determines if the Chord is playing (Phase IV: 224 <= N < 256)
+                    const isChordPhase = totalNoteCount >= NOTES_IN_CHORD_START && totalNoteCount < NOTES_IN_BAB1_REPEAT_START;
+
+                    // --- CALCULATE DYNAMIC HARMONIC BASE FREQUENCY ---
+                    const organBaseFrequency = calculateOrganBaseFrequency(masterLoop);
+                    const harmonicBaseFrequency = organBaseFrequency * modulationRatio;
+
+
+                    // --- TRIGGER SCHEDULED 1.8 SECOND HARMONIC BURST ---
+                    if (BURST_TRIGGER_NOTES.includes(totalNoteCount)) {
+                        playRandomHarmonicBurst(SCHEDULED_BURST_DURATION, harmonicBaseFrequency);
+                    }
+
+                    // --- Handle Continuous Saw Tooth Drone ---
+                    if (totalNoteCount === NOTES_IN_CHORD_START) {
+                        if (!sawOscillator) {
+                            startSawWave(nextNoteTime);
+                        }
+                    } else if (totalNoteCount === NOTES_IN_SAW_MOD_START) {
+                        modulateSawWave(nextNoteTime);
+                    } else if (totalNoteCount === NOTES_IN_BAB1_REPEAT_START) {
+                        if (sawOscillator) {
+                            stopSawWave(nextNoteTime);
+                        }
+                    }
+
+                    // 3. Play Percussion (Always plays in every phase)
+                    const isKickPlaying = (totalNoteCount % 2 === 0);
+                    if (isKickPlaying) {
+                        playKickDrum(nextNoteTime);
+                    }
+
+                    // Hi-Hats are now active from Phase III up to the end of the composition (Notes 128-383)
+                    const isHiHatActive = totalNoteCount >= NOTES_IN_MOD_UP_START;
+                    const isHiHatPlaying = isHiHatActive && (totalNoteCount % 2 !== 0);
+                    if (isHiHatPlaying) {
+                        playHiHat(nextNoteTime, duration);
+                    }
+
+                    // --- Handle Melody/Organ vs. Chord ---
+                    if (!isChordPhase) {
+                        // Play Melody (Phase I, II, III, V, VI)
+                        const melodyFrequency = MELODY_FREQUENCIES[currentNoteIndex];
+
+                        playNote(melodyFrequency, nextNoteTime, duration, modulationRatio);
+
+                        // Organ is removed in Phase VI (Notes 352 onwards)
+                        if (totalNoteCount < NOTES_IN_NEW_PHASE_1_COPY_START) {
+                            playOrganNote(organBaseFrequency, modulationRatio, nextNoteTime, duration);
+                        }
+
+
+                    } else {
+                        // Chord Ramp DOWN (Phase IV)
+                        const notesIntoChordRamp = totalNoteCount - NOTES_IN_CHORD_START;
+                        const rampRatio = Math.pow(CHORD_DOWN_EXPONENTIAL_STEP, notesIntoChordRamp);
+                        const currentBaseFreq = CHORD_BASE_FREQUENCY * rampRatio;
+
+                        const chordDuration = duration / 2;
+
+                        // First chord play (at the start of the beat)
+                        playPulseWaveChord(currentBaseFreq, nextNoteTime, chordDuration);
+
+                        // Second chord play (midway through the beat)
+                        playPulseWaveChord(currentBaseFreq, nextNoteTime + chordDuration, chordDuration);
+                    }
+
+
+                    // 4. Update the display.
+                    const melodyFrequency = isChordPhase ? 0 : MELODY_FREQUENCIES[currentNoteIndex];
+                    updateDisplay(currentNoteIndex, melodyFrequency, organBaseFrequency, masterLoop, tempo, modulationText, modulationRatio, harmonicBaseFrequency);
+
+                    // 5. Advance counters for the NEXT iteration.
+                    currentNoteIndex++;
+                    totalNoteCount++;
+
+                    // 6. Calculate the time for the next note.
+                    const { duration: nextDuration } = calculateTempo(totalNoteCount);
+                    nextNoteTime += nextDuration;
+
+                    // 7. Check for sequence wrap-around (end of the 4-note melody loop).
+                    if (currentNoteIndex >= MELODY_FREQUENCIES.length) {
+                        currentNoteIndex = 0;
+                        masterLoop++;
+                    }
+                } catch (error) {
+                    console.error(`An unexpected error occurred at note index ${totalNoteCount}:`, error);
+                    statusDisplay.textContent = 'SEQUENCE ERROR! Check Console.';
+                    stopPlayback();
+                    return;
+                }
+            }
+
+            // Schedule the next check
+            if (isPlaying) {
+                timerId = window.setTimeout(scheduler, SCHEDULING_LOOKAHEAD * 1000);
+            }
+        }
+
+        /**
+         * Jumps the playback state to a specific note index and resets the scheduler.
+         */
+        function seekComposition(noteIndex) {
+            const effectiveNoteIndex = Math.min(Math.max(0, noteIndex), TOTAL_NOTES_IN_COMPOSITION - 1);
+
+            totalNoteCount = effectiveNoteIndex;
+            masterLoop = Math.floor(effectiveNoteIndex / MELODY_FREQUENCIES.length);
+            currentNoteIndex = effectiveNoteIndex % MELODY_FREQUENCIES.length;
+
+            const { duration, tempo } = calculateTempo(totalNoteCount);
+            const organBaseFrequency = calculateOrganBaseFrequency(masterLoop);
+            const modulationRatio = getCurrentModulationRatio(totalNoteCount);
+            const modulationText = getCurrentModulationText(totalNoteCount);
+            const isChordPhase = totalNoteCount >= NOTES_IN_CHORD_START && totalNoteCount < NOTES_IN_BAB1_REPEAT_START;
+            const melodyFreq = isChordPhase ? 0 : MELODY_FREQUENCIES[currentNoteIndex];
+            const harmonicBaseFrequency = organBaseFrequency * modulationRatio;
+
+
+            // Handle Saw Wave state when seeking
+            if (sawOscillator) {
+                stopSawWave(audioContext ? audioContext.currentTime : 0);
+            }
+            if (isChordPhase && audioContext && isPlaying) {
+                startSawWave(audioContext.currentTime + 0.05);
+
+                const currentSawFreq = totalNoteCount >= NOTES_IN_SAW_MOD_START ? SAW_DRONE_FREQUENCY_END : SAW_DRONE_FREQUENCY_START;
+                if (sawOscillator) {
+                    sawOscillator.frequency.setValueAtTime(currentSawFreq, audioContext.currentTime + 0.05);
+                }
+            }
+
+
+            updateDisplay(currentNoteIndex, melodyFreq, organBaseFrequency, masterLoop, tempo, modulationText, modulationRatio, harmonicBaseFrequency);
+
+            if (parseInt(seekSlider.value) !== effectiveNoteIndex) {
+                seekSlider.value = effectiveNoteIndex;
+            }
+            sliderNoteDisplay.textContent = `Note ${effectiveNoteIndex + 1} / ${TOTAL_NOTES_IN_COMPOSITION}`;
+
+
+            // If playing, reset the scheduler to start from the current time
+            if (isPlaying && audioContext) {
+                if (timerId !== null) {
+                    window.clearTimeout(timerId);
+                }
+                nextNoteTime = audioContext.currentTime + 0.05;
+                scheduler(); // Restart scheduling from the new state
+            }
+        }
+
+
+        /**
+         * Starts the playback sequence.
+         */
+        function startPlayback() {
+            if (isPlaying) return;
+
+            if (!audioContext || audioContext.state === 'closed') {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                reverbNode = createReverb(audioContext);
+
+                // Initialize Master Gain for global fade control
+                masterGainNode = audioContext.createGain();
+                masterGainNode.gain.value = 1.0;
+                masterGainNode.connect(audioContext.destination);
+            }
+
+            if (audioContext.state === 'suspended') {
+                audioContext.resume().catch(e => console.error("AudioContext resume failed:", e));
+            }
+
+            // Setup the required audio effects
+            setupEcho(audioContext);
+
+            // --- Phaser Setup (for Phase IV) ---
+            const PHASER_RATE = 0.5;
+            const PHASER_DEPTH = 1500;
+
+            phaserNode = audioContext.createBiquadFilter();
+            phaserNode.type = 'notch';
+            phaserNode.Q.setValueAtTime(10, 0);
+            phaserNode.frequency.setValueAtTime(1000, 0);
+
+            phaserLFO = audioContext.createOscillator();
+            phaserLFO.frequency.setValueAtTime(PHASER_RATE, 0);
+
+            const lfoGain = audioContext.createGain();
+            lfoGain.gain.setValueAtTime(PHASER_DEPTH, 0);
+
+            phaserLFO.connect(lfoGain);
+            lfoGain.connect(phaserNode.frequency);
+            phaserLFO.start(0);
+
+            // Connect Phaser output to Reverb input
+            phaserNode.connect(reverbNode);
+            // Connect Reverb output to the MASTER GAIN
+            reverbNode.connect(masterGainNode); // Was audioContext.destination
+
+            // Reset state variables based on slider position
+            isPlaying = true;
+            seekComposition(parseInt(seekSlider.value));
+            nextNoteTime = audioContext.currentTime + 0.05;
+
+            // Enable visual animations
+            visualContainer.classList.add('playback-active');
+
+            // Update UI
+            statusDisplay.textContent = 'Playing...';
+            toggleButton.textContent = 'Stop Sequence';
+            toggleButton.classList.remove('bg-indigo-600', 'hover:-indigo-700');
+            toggleButton.classList.add('bg-red-600', 'hover:bg-red-700');
+
+            // Start the scheduler loop
+            scheduler();
+        }
+
+        /**
+         * Stops the playback sequence.
+         */
+        function stopPlayback() {
+            if (!isPlaying) return;
+
+            isPlaying = false;
+
+            if (timerId !== null) {
+                window.clearTimeout(timerId);
+                timerId = null;
+            }
+
+            // Stop continuous elements
+            if (sawOscillator) {
+                stopSawWave(0);
+            }
+
+            if (phaserLFO) {
+                phaserLFO.stop();
+                phaserLFO.disconnect();
+                phaserNode.disconnect();
+                phaserLFO = null;
+                phaserNode = null;
+            }
+
+            if (audioContext) {
+                audioContext.close().catch(e => console.error("AudioContext close failed:", e));
+            }
+            audioContext = null;
+            masterGainNode = null;
+            reverbNode = null;
+            sawOscillator = null;
+            feedbackDelayNode = null;
+            feedbackGainNode = null;
+
+            // Disable visual animations
+            visualContainer.classList.remove('playback-active');
+
+            // Update UI to reflect stopped state
+            statusDisplay.textContent = masterLoop >= LOOP_LIMIT ? 'Composition Complete' : 'Stopped';
+
+            toggleButton.textContent = 'Start Sequence';
+            toggleButton.classList.remove('bg-red-600', 'hover:bg-red-700');
+            toggleButton.classList.add('bg-indigo-600', 'hover:bg-indigo-700');
+        }
+
+        /**
+         * Toggles the playback state based on the current status.
+         */
+        function togglePlayback() {
+            if (isPlaying) {
+                stopPlayback();
+            } else {
+                startPlayback();
+            }
+        }
+
+        /**
+         * Determines the current Saw Drone Frequency for display purposes.
+         */
+        function getCurrentSawFrequency(noteCount) {
+             if (noteCount >= NOTES_IN_CHORD_START && noteCount < NOTES_IN_BAB1_REPEAT_START) {
+                return noteCount >= NOTES_IN_SAW_MOD_START ? SAW_DRONE_FREQUENCY_END : SAW_DRONE_FREQUENCY_START;
+            }
+            return 0;
+        }
+
+        /**
+         * Updates the status area with the current note, loop, and tempo information.
+         */
+        function updateDisplay(index, melodyFrequency, organBaseFrequency, loop, tempo, modulationText, modulationRatio, harmonicBaseFrequency) {
+            const noteNames = ["First", "Second", "Third", "Fourth"];
+
+            const isChordPhase = totalNoteCount >= NOTES_IN_CHORD_START && totalNoteCount < NOTES_IN_BAB1_REPEAT_START;
+            const isOrganMuted = totalNoteCount >= NOTES_IN_NEW_PHASE_1_COPY_START;
+
+            let currentMelodyFrequency = 0;
+            let currentOrganFrequency = 0;
+            let noteInfo;
+
+            if (!isChordPhase) {
+                currentMelodyFrequency = melodyFrequency * modulationRatio;
+                currentOrganFrequency = isOrganMuted ? 0 : organBaseFrequency * modulationRatio;
+
+                const organStatus = isOrganMuted ? 'Muted' : `${currentOrganFrequency.toFixed(2)} Hz`;
+                noteInfo = `Melody: ${noteNames[index]} (${currentMelodyFrequency.toFixed(2)} Hz) | Organ: ${organStatus}`;
+            } else {
+                const notesIntoChordRamp = totalNoteCount - NOTES_IN_CHORD_START;
+                const rampRatio = Math.pow(CHORD_DOWN_EXPONENTIAL_STEP, notesIntoChordRamp);
+                const currentBaseFreq = CHORD_BASE_FREQUENCY * rampRatio;
+                const currentSawFreq = getCurrentSawFrequency(totalNoteCount);
+
+                const chordGainPercentage = (CHORD_MAX_GAIN * 100).toFixed(1);
+                const sawGainPercentage = (SAW_MAX_GAIN * 100).toFixed(1);
+
+                noteInfo = `Pulse Chord Base: ${currentBaseFreq.toFixed(2)} Hz (Phasing, ${chordGainPercentage}% Gain) | Saw Drone: ${currentSawFreq.toFixed(0)} Hz (${sawGainPercentage}% Gain)`;
+            }
+
+            loopDisplay.textContent = `Master Loop: ${loop} / ${LOOP_LIMIT} (Note ${totalNoteCount + 1}/${TOTAL_NOTES_IN_COMPOSITION})`;
+            tempoDisplay.textContent = `Tempo: ${tempo.toFixed(2)} NPM`;
+
+            // --- Sync Animation Speed to Tempo ---
+            // Calculate beat duration in seconds (60 / NPM)
+            // We use this CSS variable to speed up the zombie animation as the music accelerates
+            if (visualContainer) {
+                 const beatDuration = 60 / tempo;
+                 visualContainer.style.setProperty('--beat-duration', `${beatDuration}s`);
+            }
+
+            let rhythmInfo = `Kick (Vol ${KICK_DRUM_MAX_GAIN.toFixed(1)}): ${totalNoteCount % 2 === 0 ? 'Yes' : 'No'}`;
+
+            const isHiHatActive = totalNoteCount >= NOTES_IN_MOD_UP_START;
+            if (isHiHatActive) {
+                rhythmInfo += ` | Hi-Hat (Vol ${HI_HAT_MAX_GAIN.toFixed(1)}): ${totalNoteCount % 2 !== 0 ? 'Yes' : 'No'}`;
+            }
+
+            const burstInfo = BURST_TRIGGER_NOTES.includes(totalNoteCount)
+                ? `Burst Base: ${harmonicBaseFrequency.toFixed(2)} Hz`
+                : '';
+
+            if (isPlaying) {
+                statusDisplay.textContent = 'Playing...';
+                noteDisplay.textContent = `${noteInfo} [${modulationText}] ${burstInfo} | ${rhythmInfo}`;
+            } else {
+                noteDisplay.textContent = `Note: Waiting`;
+            }
+
+            // Update slider display
+            if (seekSlider) {
+                 seekSlider.max = TOTAL_NOTES_IN_COMPOSITION - 1;
+                 seekSlider.value = totalNoteCount;
+                 sliderNoteDisplay.textContent = `Note ${totalNoteCount + 1} / ${TOTAL_NOTES_IN_COMPOSITION}`;
+            }
+        }
+
+        // Initial setup of the display and slider
+        document.addEventListener('DOMContentLoaded', () => {
+            const initialNoteIndex = parseInt(seekSlider.value);
+            const initialModText = getCurrentModulationText(initialNoteIndex);
+            const initialModRatio = getCurrentModulationRatio(initialNoteIndex);
+            const initialOrganBase = calculateOrganBaseFrequency(0);
+            const initialHarmonicBase = initialOrganBase * initialModRatio;
+
+
+            updateDisplay(0, 0, initialOrganBase, 0, NPM_START, initialModText, initialModRatio, initialHarmonicBase);
+
+            seekSlider.addEventListener('input', (e) => {
+                const index = parseInt(e.target.value);
+                seekComposition(index);
+            });
+        });
+
+    </script>
+
+</body>
+</html>
